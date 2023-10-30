@@ -8,10 +8,22 @@ function ViewRestaurant() {
     const {id} = useParams()
     const {allRestaurants,loading,error} = useSelector((state)=>state.restaurantSlice)
     const [restaurant,setRestaurant] = useState({})
+    const [showHours, setShowHours] = useState(false);
+    const [showReviews,setShowReviews] = useState(false)
+
+  const handleCloseHoursModal = () => setShowHours(false);
+  const handleShowHoursModal = () => setShowHours(true);
+  const handleCloseReviewsModal = () => setShowReviews(false);
+  const handleShowReviewsModal = () => setShowReviews(true);
 
     useEffect(()=>{
         setRestaurant(allRestaurants.find(item=>item.id==id))
     },[])
+
+    const {reviews} = restaurant;
+    console.log(reviews);
+    const {operating_hours} = restaurant;
+    console.log(operating_hours);
 
   return (
     <div>
@@ -39,14 +51,48 @@ function ViewRestaurant() {
             </p>
           </div>
           <div className="mt-2 d-flex flex-column">
-            <button className="btn btn-secondary p-2 w-50 my-2">
+            <button className="btn btn-secondary p-2 w-50 my-2" onClick={handleShowHoursModal}>
               Operating Hours
             </button>
-            <button className="btn btn-secondary p-2 w-50 my-2">
+            <button className="btn btn-secondary p-2 w-50 my-2" onClick={handleShowReviewsModal}>
               Click here to view the reviews
             </button>
           </div>
 
+          <Modal size='lg' show={showHours} onHide={handleCloseHoursModal} animation={false}>
+        <Modal.Header closeButton>
+          <Modal.Title>Operating Hours</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+            <ul>
+              {
+                  operating_hours? Object.entries(operating_hours).map(([key, value]) => (
+                    <li className='m-3'>{key} : {value}</li>
+                  )):<p>Nothing to display</p>
+         
+              }
+            </ul>
+        </Modal.Body>
+        
+      </Modal>
+
+          <Modal size='lg' show={showReviews} onHide={handleCloseReviewsModal} animation={false}>
+        <Modal.Header closeButton>
+          <Modal.Title>Reviews</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+            <ul>
+              {
+                  reviews?.length > 0 ? reviews?.map(review=>(
+                      <li className='m-3'>{review?.comments}</li>
+                  ))
+                  
+                  :<p>No reviews to display</p>
+              }
+            </ul>
+        </Modal.Body>
+        
+      </Modal>
         </Col>
       </Row>
 
